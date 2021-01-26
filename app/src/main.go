@@ -1,23 +1,39 @@
 package main
 
 import (
-	"fmt"
-	"sort"
+	"database/sql"
+	"log"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
+func execDB(db *sql.DB, q string) {
+	if _, err := db.Exec(q); err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
-	var n, x int
-	fmt.Scan(&n, &x)
 
-	t := make([]int, n)
-	for i := 0; i < n; i++ {
-		fmt.Scan(&t[i])
+	db, err := sql.Open("sqlite3", "./data.db")
+	if err != nil {
+		log.Fatal(err)
 	}
-	// [170 165 150 160 175 180 155]
-	fmt.Println("===========")
 
-	sort.Ints(t)
-	for i := 0; i < x; i++ {
-		fmt.Println(t[i])
-	}
+	q := `
+        CREATE TABLE memo (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          body VARCHAR(255) NOT NULL,
+          created_at TIMESTAMP DEFAULT (DATETIME('now','localtime'))
+        )
+    `
+	execDB(db, q)
+
+	q = `
+        INSERT INTO memo(body)
+        VALUES ('body1'), ('body2')
+    `
+	execDB(db, q)
+
+	db.Close()
 }
