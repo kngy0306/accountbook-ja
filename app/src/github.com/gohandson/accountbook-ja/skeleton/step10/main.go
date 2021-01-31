@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/tenntenn/sqlite"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 	// データベースへ接続
 	// ドライバにはSQLiteを使って、
 	// accountbook.dbというファイルでデータベース接続を行う
-	db, err := sql.Open(sqlite.DriverName, "accountbook.db")
+	db, err := sql.Open("sqlite3", "accountbook.db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,6 +35,7 @@ func main() {
 	// ハンドラの登録
 	http.HandleFunc("/", hs.ListHandler)
 	// TODO: SaveHandlerの登録
+	http.HandleFunc("/save", hs.SaveHandler)
 
 	fmt.Println("http://localhost:8080 で起動中...")
 	// HTTPサーバを起動する
